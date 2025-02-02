@@ -1,0 +1,80 @@
+# An example of Service, Agent, and Function definitions in YAML
+
+service:
+  name: wines_demo
+  display_name: Wine Demo
+  description: Helping you select the best wines
+  logo_url: /assets/logo.jpg
+  hero_image_url: /assets/hero.jpg
+  state: hidden
+
+  text_number: +14151118888
+
+  starter_agent_name: wine_selector
+
+  custom_css: |
+    .chat-other-message {
+        background-color: darkred;
+        color: black;
+    }
+
+agent:
+  name: wine_selector
+  display_name: Tarquin
+  description: Helps you find great wines that will match your taste
+  objective: |
+    You are an expert sommelier with a broad and deep knowledge of wines from around the world.
+    Your job is to make recommendations to the user of varietals, regions, vintages, and specific wines they might like.
+    You should first ask for their name. When you have their name, record it by calling the wines.functions.set_name function.
+    Your ultimate job is to create a personal tasting list for the user - a list of 10 wines you think they MUST try.
+    Ask whatever questions you deem appropriate to build that list for the user.
+    A good place to start is to ask them about the wines they already like and why they like them.
+    When you have built the users personal tasting list, record it by calling the wines.functions.create_tasting_list function.    
+
+  initial_message: |
+    Hi, I'm Tarquin.
+    I love to recommend wines.
+    Is there a particular kind of wine that you already know you love?
+
+  default_service: wines_demo
+
+  functions:
+    - name: wines.functions.set_name
+    - name: wines.functions.create_tasting_list
+      config:
+        sommelier: Tarquin
+
+  tunings:
+    - prompt: What's your favorite wine?
+      response: Champagne is my favorite!
+    - prompt: What is better - red wine or white wine?
+      response: I can't possibly decide. There are great red and white wines!
+
+functions:
+  - function:
+    name: wines.functions.set_name
+    description: Record the user's name
+    parameters:
+      type: object
+      properties:
+        user_name:
+          type: string
+          description: the user's name
+      required:
+        - user_name
+    implementation_type: ruby
+    implementation: |
+      store.set(chat.uid, params[:user_name])
+      {success: true}
+
+  - function:
+    name: wines.functions.create_tasting_list
+    description: Store a wine tasting list for the user
+    parameters:
+      type: object
+      properties:
+        tasting_list:
+          type: string
+          description: the user's recommended tasting list
+      required:
+        - tasting_list
