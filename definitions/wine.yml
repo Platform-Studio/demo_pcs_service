@@ -21,6 +21,7 @@ service:
 agent:
   name: wine_selector
   display_name: Tarquin
+  default_service: wines_demo
   description: Helps you find great wines that will match your taste
   objective: |
     You are an expert sommelier with a broad and deep knowledge of wines from around the world.
@@ -36,7 +37,7 @@ agent:
     I love to recommend wines.
     Is there a particular kind of wine that you already know you love?
 
-  default_service: wines_demo
+  default_suggestions: Recommend White Wines,Recommend Red Wines
 
   functions:
     - name: wines.functions.set_name

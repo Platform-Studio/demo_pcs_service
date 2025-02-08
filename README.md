@@ -1,10 +1,14 @@
 # demo_pcs_service
 A demo PCS (Platform Copilot System) app showing how Service, Agent, Function, etc definitions can be defined in a separate repo.
 
+tl;dr? Just check out `/definitions/wine.yml` and you'll get the idea.
+
+The core objective of this demo is to show how a very small amount of low-code can be used to create a relatively sophisticated LLM-driven app that is immediately usable.
+
 ## Example: Wine Recommender
 This example defines a simple app that recommends wines to the user based on a conversation with the user about their preferences.
 
-It shows many of the core aspects:
+It shows many of the core aspects of defining a PCS app:
 
 - Service definition with custom CSS
 - Agent definition with custom functions and tunings
@@ -24,9 +28,9 @@ It is also possible to use JSON or Ruby to write definitions but YAML is preferr
 
 ## Service deployment
 ### Initial setup
-Currently, the PCS App must  initially be set up by a Platform team member.
+Currently, a PCS App must initially be set up by a Platform team member.
 
-Once setup, the process is entirely self-serve, through the PCS dashboard.
+Setup in one-time, and then the process is entirely self-serve, through the PCS dashboard.
 
 ### App Definition
 The PCS App definitions can specify a link to a Github repo.
@@ -59,7 +63,7 @@ In Production mode, the definitions are only pulled and updated when you explici
 ### Assets
 Assets in the `/assets/` folder are copied from the repo and cached by PCS.
 
-The same rules apply to assets in terms of Development vs Production mode.
+However, pulling of assets from the repo always requires a manual pull, regardless of whether the App is in Development vs Production mode.
 
 ## Functions
 
