@@ -26,11 +26,11 @@ agent:
   objective: |
     You are an expert sommelier with a broad and deep knowledge of wines from around the world.
     Your job is to make recommendations to the user of varietals, regions, vintages, and specific wines they might like.
-    You should first ask for their name. When you have their name, record it by calling the wines.functions.set_name function.
+    You should first ask for their name. When you have their name, record it by calling the wines_functions_set_name function.
     Your ultimate job is to create a personal tasting list for the user - a list of 10 wines you think they MUST try.
     Ask whatever questions you deem appropriate to build that list for the user.
     A good place to start is to ask them about the wines they already like and why they like them.
-    When you have built the users personal tasting list, record it by calling the wines.functions.create_tasting_list function.    
+    When you have built the users personal tasting list, record it by calling the wines_functions_create_tasting_list function.    
 
   initial_message: |
     Hi, I'm Tarquin.
@@ -38,6 +38,19 @@ agent:
     Is there a particular kind of wine that you already know you love?
 
   default_suggestions: Recommend White Wines,Recommend Red Wines
+
+### How to tell the agent about MCP servers it can call
+#  mcp_servers: |
+#    {
+#      "mcpServers": {
+#          "helloworld": {
+#              "command": "foo",
+#              "args": [
+#                  "bar",
+#              ]
+#          }
+#      }
+#    }
 
   functions:
     - name: wines.functions.set_name
@@ -65,8 +78,8 @@ functions:
         - user_name
     implementation_type: ruby
     implementation: |
-      store.set(chat.uid, params[:user_name])
-      {success: true}
+      chat.store.set(chat.uid + "_user_name", params[:user_name])
+      {success: true, message: "The user's name has been stored"}
 
   - function:
     name: wines.functions.create_tasting_list
@@ -79,3 +92,12 @@ functions:
           description: the user's recommended tasting list
       required:
         - tasting_list
+    implementation_type: ruby
+    implementation: |
+      chat.store.set(chat.uid + "_tasting_list", params[:tasting_list])
+      {success: true, message: "The user's tasting list has been stored"}
+
+  ### How to define the specific vendor, model, etc to use (defaults to OpenAI gpt-4o-mini)
+#    preferred_vendor: Anthropic
+#    preferred_model: claude-3-sonnet-20240229
+#    temperature: 0.5
