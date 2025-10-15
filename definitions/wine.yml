@@ -1,4 +1,7 @@
-# An example of Service, Agent, and Function definitions in YAML
+# Wine Demo
+# An example of Service, Agent, Function, and View definitions in YAML
+# For simplicity, all definitions are in this single YML file.
+# For production apps, we recommend splitting out into separate files.
 
 service:
   name: wines_demo
@@ -23,15 +26,29 @@ agent:
   name: wine_selector
   display_name: Tarquin
   default_service: wines_demo
+  avatar_url: /assets/logo.jpg
   description: Helps you find great wines that will match your taste
   objective: |
     You are an expert sommelier with a broad and deep knowledge of wines from around the world.
     Your job is to make recommendations to the user of varietals, regions, vintages, and specific wines they might like.
-    You should first ask for their name. When you have their name, record it by calling the wines_functions_set_name function.
+    You should first ask for their name. When you have their name, record it by calling the wines__functions__set_name function.
     Your ultimate job is to create a personal tasting list for the user - a list of 10 wines you think they MUST try.
     Ask whatever questions you deem appropriate to build that list for the user.
     A good place to start is to ask them about the wines they already like and why they like them.
-    When you have built the users personal tasting list, record it by calling the wines_functions_create_tasting_list function.    
+    When you have built the users personal tasting list, record it by calling the wines__functions__create_tasting_list function, passing in
+    the tasting list in JSON in the following format:
+    {"tasting_list": [
+      {
+        "name": "Château Margaux 2015",
+        "producer": "Château Margaux",
+        "region": "Bordeaux",
+        "subregion": "Margaux",
+        "country": "France",
+        "appellation": "AOC Margaux",
+        "vintage": 2015
+      },
+      {...}
+    ]}
 
   initial_message: |
     Hi, I'm Tarquin.
@@ -85,10 +102,13 @@ functions:
           description: the user's name
       required:
         - user_name
-    implementation_type: ruby
+    implementation_type: js
+    # language=javascript
     implementation: |
-      chat.store.set(chat.uid + "_user_name", params[:user_name])
-      {success: true, message: "The user's name has been stored"}
+      const store = chat.getStore();
+      store.scopeTo({chat: chat});
+      store.set("user_name", params["user_name"]);
+      ({success: true, message: "The user's name has been stored"});
 
   - function:
     name: wines.functions.create_tasting_list
@@ -98,11 +118,36 @@ functions:
       properties:
         tasting_list:
           type: string
-          description: the user's recommended tasting list
+          description: the user's recommended tasting list in JSON format
       required:
         - tasting_list
-    implementation_type: ruby
+    implementation_type: js
+    # language=javascript
     implementation: |
-      chat.store.set(chat.uid + "_tasting_list", params[:tasting_list])
-      {success: true, message: "The user's tasting list has been stored"}
+      const store = chat.getStore();
+      store.scopeTo({chat: chat});
+      store.set("tasting_list", params["tasting_list"]);
+      chat.setView("wines.views.tasting_list");
+      ({success: true, message: "The user's tasting has been stored"});
 
+# Implement Views
+views:
+  - view:
+    name: wines.views.tasting_list
+    description: Show the user their recommended tasting list
+    # language=css
+    custom_css: |
+      #tasting_list ol li {
+          font-size: 18px;
+      }
+    # language=html
+    implementation: |
+      <div id="tasting_list">
+          <ol>
+            <% store.get("tasting_list").each do |wine| %>
+              <li>
+                  <%= wine["vintage"] %> <%= wine["name"] %>
+              </li>
+            <% end %>
+          </ol>
+      </div>
