@@ -12,6 +12,7 @@ service:
 
   starter_agent_name: wine_selector
 
+  # Make the background color of messages from the AI red
   custom_css: |
     .chat-other-message {
         background-color: darkred;
@@ -39,31 +40,39 @@ agent:
 
   default_suggestions: Recommend White Wines,Recommend Red Wines
 
-### How to tell the agent about MCP servers it can call
-#  mcp_servers: |
-#    {
-#      "mcpServers": {
-#          "helloworld": {
-#              "command": "foo",
-#              "args": [
-#                  "bar",
-#              ]
-#          }
-#      }
-#    }
-
+  # Declare Functions that the LLM has access to, and pass any needed config to them
   functions:
     - name: wines.functions.set_name
     - name: wines.functions.create_tasting_list
       config:
         sommelier: Tarquin
 
+  # Setup custom Tunings
   tunings:
     - prompt: What's your favorite wine?
       response: Champagne is my favorite!
     - prompt: What is better - red wine or white wine?
       response: I can't possibly decide. There are great red and white wines!
 
+  ### How to tell the agent about MCP servers it can call
+  #  mcp_servers: |
+  #    {
+  #      "mcpServers": {
+  #          "helloworld": {
+  #              "command": "foo",
+  #              "args": [
+  #                  "bar",
+  #              ]
+  #          }
+  #      }
+  #    }
+
+  ### How to define the specific vendor, model, etc to use (defaults to OpenAI gpt-4o-mini)
+  #    preferred_vendor: Anthropic
+  #    preferred_model: claude-3-sonnet-20240229
+  #    temperature: 0.5
+
+# Implement functions
 functions:
   - function:
     name: wines.functions.set_name
@@ -97,7 +106,3 @@ functions:
       chat.store.set(chat.uid + "_tasting_list", params[:tasting_list])
       {success: true, message: "The user's tasting list has been stored"}
 
-  ### How to define the specific vendor, model, etc to use (defaults to OpenAI gpt-4o-mini)
-#    preferred_vendor: Anthropic
-#    preferred_model: claude-3-sonnet-20240229
-#    temperature: 0.5

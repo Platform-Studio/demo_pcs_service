@@ -60,7 +60,7 @@ This introduces a slight delay but makes the development cycle easier since upda
 
 In Production mode, the definitions are only pulled and updated when you explicitly initiate the process from the PCS dashboard.
 
-(In a future version, we plan to support deployment hooks to make deployment of updates even easier.)
+(In future, we plan to support deployment hooks to make deployment of updates even easier.)
 
 ### Assets
 Assets in the `/assets/` folder are copied from the repo and cached by PCS.
@@ -72,17 +72,23 @@ However, pulling of assets from the repo always requires a manual pull, regardle
 ### Supported implementations
 At the time of writing, functions can be implemented as any of the following:
 
-- inline Ruby defined in the Function definition (suitable for most simple functions)
-- Ruby class (suitable for more complex functions)
+- JavaScript
 - Cloud functions that are uploaded to Google Cloud on deployment and called via API (most flexible but introduces another potential point of failure)
 
 ### Function environment
-When a Function is invoked, it has access to a number of objects and methods:
+When a Function is invoked, it has access to a number of objects and methods from the PCS environment:
 
 - `params` - a hash of the params passed to the Function by the LLM
-- `chat` - the Chat the function was called from, allowing the Function to access messages, update UX, modify suggestions, etc
+- `chat` - the Chat the function was called from, allowing the Function to access Messages, update the UX, modify suggestions, etc
 - `config` - a hash of the configuration for the Function specified in the Agent definition
-- `store` - providing access to key/value storage for the current Service to allow data to be persisted between Chats
+- `store` - providing access to key/value storage for the current Service to allow data to be persisted between Chats (also referred to as "memories")
+
+### External functions
+A Function can optionally be set as "external". 
+
+This means that, in addition to the LLM being able to call it through a tool call, it can also be called over HTTP/S.
+
+External Functions allow the LLM and forms-and-buttons web UX to share the same functionality and state.
 
 ### MCP Support
 Agents defined in PCS can also call tools over the MCP protocol (see https://modelcontextprotocol.io/introduction).
