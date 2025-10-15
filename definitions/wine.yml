@@ -15,10 +15,10 @@ service:
 
   starter_agent_name: wine_selector
 
-  # Make the background color of messages from the AI red
+  # Make the background color of messages from the AI red in the web UX
   custom_css: |
     .chat-other-message {
-        background-color: darkred;
+        background-color: red;
         color: black;
     }
 
@@ -137,15 +137,15 @@ views:
     description: Show the user their recommended tasting list
     # language=css
     custom_css: |
-      #tasting_list ol li {
-          font-size: 18px;
+      #tasting-list {
+          padding: 20px;
       }
     # language=html
     implementation: |
-      <div id="tasting_list">
+      <div id="tasting-list">
           <ol>
             <% store.get("tasting_list").each do |wine| %>
-              <li>
+              <li class="chat-primary-text">
                   <%= wine["vintage"] %> <%= wine["name"] %>
               </li>
             <% end %>
