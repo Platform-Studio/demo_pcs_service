@@ -143,6 +143,7 @@ views:
     # language=html
     implementation: |
       <div id="tasting-list">
+          <h1 class="chat-primary-text">Your Tasting Menu:</h1>
           <ol>
             <% store.get("tasting_list").each do |wine| %>
               <li class="chat-primary-text">

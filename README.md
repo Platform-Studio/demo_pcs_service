@@ -7,12 +7,14 @@ The core objective of this demo is to show how a very small amount of low-code c
 
 ## Example: Wine Recommender
 This example defines a simple app that recommends wines to the user based on a conversation with the user about their preferences.
+The agent creates a recommended tasting list that is displayed to the user.
 
 It shows many of the core aspects of defining a PCS app:
 
 - Service definition with custom CSS styling
-- Agent definition with custom functions and tunings
+- Agent definition with custom Functions and Tunings
 - Function definitions implemented inline
+- View definitions
 - connection to a Twilio number for SMS/text (a fake number for this example)
 
 It is already deployed and available to use through the web UX at:
@@ -24,25 +26,27 @@ So, in this case, you can email `wine_selector@pcs.platformstud.io`
 ## YAML definitions
 `/definitions/wine.yml`
 
-In this example, the Service, Agent, and Functions are defined in YAML, the recommended format.
+In this example, the Service, Agent, Functions, and Views are defined in YAML, the recommended format.
 
-It is also possible to use JSON or Ruby to write definitions but YAML is preferred due to its brevity.
+(It is also possible to use JSON to write definitions but YAML is preferred due to its brevity.)
 
 ## Service deployment
 ### Initial setup
 Currently, a PCS App must initially be registered by a Platform team member.
 
-However, this setup is a one-time event, and then the process is entirely self-serve, through the PCS dashboard.
+However, this setup is a one-time event, and then the process is entirely self-serve, through the PCS AI Dev dashboard.
+
+The AI Dev dashboard is shown in the left-most column when logged into PlatformOS or reached directly at https://os.platformstud.io/chat/dash.
 
 ### App Definition
-The PCS App definitions specify a link to a Github repo.
+A PCS App definition specifies a URL for a Github repo.
 
-Ar this URL, PCS expects to find definitions and assets in that repo in the `/definitions/` and `/assets/` folders, respectively.
+At this URL, PCS expects to find definitions and assets in that repo in the `/definitions/` and `/assets/` folders, respectively.
 
 All other paths are ignored.
 
 ### Private Repos
-For private repos, a credential must also be provided to grant PCS access.
+For private repos, a credential must also be provided to grant PCS access to read from the repo.
 
 At the time of writing, only Personal Access Tokens (PATs) are supported.
 
@@ -56,16 +60,16 @@ Through the PCS dashboard, you are able to toggle an app between Development and
 
 In Development mode, the definitions will be pulled from the specified repo __every time a Service, Agent or Function is invoked__.
 
-This introduces a slight delay but makes the development cycle easier since updates you push to your repo are reflected immediately.
+This introduces a slight delay when using the app but makes the development cycle easier since updates you push to your repo are reflected immediately.
 
-In Production mode, the definitions are only pulled and updated when you explicitly initiate the process from the PCS dashboard.
+In Production mode, the definitions are only pulled and updated when you explicitly initiate a pull from the PCS dashboard.
 
 (In future, we plan to support deployment hooks to make deployment of updates even easier.)
 
 ### Assets
 Assets in the `/assets/` folder are copied from the repo and cached by PCS.
 
-However, pulling of assets from the repo always requires a manual pull, regardless of whether the App is in Development vs Production mode.
+However, pulling of assets from the repo always requires an explicit pull, regardless of whether the App is in Development vs Production mode.
 
 ## Functions
 
@@ -81,14 +85,16 @@ When a Function is invoked, it has access to a number of objects and methods fro
 - `params` - a hash of the params passed to the Function by the LLM
 - `chat` - the Chat the function was called from, allowing the Function to access Messages, update the UX, modify suggestions, etc
 - `config` - a hash of the configuration for the Function specified in the Agent definition
-- `store` - providing access to key/value storage for the current Service to allow data to be persisted between Chats (also referred to as "memories")
+
+From the `chat` object, the `store` can be accessed (`chat.getStore()`). 
+The `store` provides key/value storage for the current Service to allow data to be persisted (also referred to as "memories").
 
 ### External functions
 A Function can optionally be set as "external". 
 
 This means that, in addition to the LLM being able to call it through a tool call, it can also be called over HTTP/S.
 
-External Functions allow the LLM and forms-and-buttons web UX to share the same functionality and state.
+External Functions allow the LLM and any forms-and-buttons views to share the same functionality and state.
 
 ### MCP Support
 Agents defined in PCS can also call tools over the MCP protocol (see https://modelcontextprotocol.io/introduction).
@@ -102,7 +108,7 @@ The wine.yml example file contains an example here, albeit commented out.
 ## Debugging
 The default web UX provides a lot of additional debugging options.
 
-Just add a `debug=true` parameter to the URL in the browser. You must be logged in with an account that has management rights.
+Just add a `debug=true` parameter to the URL in the browser. (You must be logged in with an account that has management rights.)
 
 The debug view provides a number of things:
 
